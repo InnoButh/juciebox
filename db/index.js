@@ -74,9 +74,9 @@ async function getUserById(userId) {
     const {
       rows: [user],
     } = await client.query(`
-    SELECT (id, username, name, location, active)
+    SELECT id, username, name, location, active
     FROM users
-    WHERE id = ${userId}
+    WHERE 'id' = ${userId}
   `);
     if (!user) {
       return null;
@@ -337,6 +337,25 @@ async function getPostsByTagName(tagName) {
     );
 
     return await Promise.all(postIds.map((post) => getPostById(post.id)));
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getUserByUsername(username) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      SELECT *
+      FROM users
+      WHERE username=$1
+    `,
+      [username]
+    );
+
+    return user;
   } catch (error) {
     throw error;
   }

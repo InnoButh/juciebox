@@ -1,15 +1,12 @@
+require("dotenv").config();
 const PORT = 3000;
+const { client } = require("./db");
+client.connect();
 const express = require("express");
 const server = express();
-
 const apiRouter = require("./api");
-server.use("/api", apiRouter);
-
 const bodyParser = require("body-parser");
-server.use(bodyParser.json());
-
 const morgan = require("morgan");
-server.use(morgan("dev"));
 
 server.use((req, res, next) => {
   console.log("<____Body Logger START____>");
@@ -19,8 +16,9 @@ server.use((req, res, next) => {
   next();
 });
 
-const { client } = require("./db");
-client.connect();
+server.use("/api", apiRouter);
+server.use(bodyParser.json());
+server.use(morgan("dev"));
 
 server.listen(PORT, () => {
   console.log("The server is up on port", PORT);
